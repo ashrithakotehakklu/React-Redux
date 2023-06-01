@@ -1,25 +1,42 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { GoogleLogin, GoogleLogout } from 'react-google-login';
+import { signIn, signOut } from './actions/authActions';
 
-function App() {
+const App = () => {
+  const auth = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+
+  const handleLogin = (response) => {
+    dispatch(signIn(response.profileObj));
+  };
+
+  const handleLogout = () => {
+    dispatch(signOut());
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      {!auth.isSignedIn ? (
+        <GoogleLogin
+          clientId="776418814053-hccb99mo0ks8o9l3o3e5plhsn43p96rk.apps.googleusercontent.com"
+          buttonText="Login with Google"
+          onSuccess={handleLogin}
+          onFailure={handleLogin}
+          cookiePolicy={'single_host_origin'}
+        />
+      ) : (
+        <div>
+          <h3>Welcome, {auth.user.name}!</h3>
+          <GoogleLogout
+            clientId="776418814053-hccb99mo0ks8o9l3o3e5plhsn43p96rk.apps.googleusercontent.com"
+            buttonText="Logout"
+            onLogoutSuccess={handleLogout}
+          />
+        </div>
+      )}
     </div>
   );
-}
+};
 
 export default App;
